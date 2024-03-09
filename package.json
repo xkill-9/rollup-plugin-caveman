@@ -1,0 +1,39 @@
+{
+  "name": "rollup-plugin-caveman",
+  "version": "0.0.1",
+  "description": "Converts Caveman templates to ES6 modules",
+  "author": "Jorge Morales",
+  "repository": {
+    "url": "https://github.com/xkill-9/rollup-plugin-caveman"
+  },
+  "packageManager": "yarn@4.1.1",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.mjs",
+    "default": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keyworks": [
+    "rollup",
+    "plugin",
+    "templates",
+    "modules",
+    "caveman"
+  ],
+  "scripts": {
+    "build": "tsup index.ts --format esm, cjs --dts",
+    "release": "yarn build && changeset publish",
+    "lint": "tsc"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "prettier": "3.2.5",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2"
+  }
+}

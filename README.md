@@ -1,2 +1,3 @@
 # rollup-plugin-caveman
-Convert Caveman templates to ES6 modules
+
+🍣 A Rollup plugin to convert Caveman templates to ES6 modules
