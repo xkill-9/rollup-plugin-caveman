@@ -32,7 +32,6 @@
     "test": "ava"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
     "@types/node": "^20.11.25",
     "ava": "^6.1.2",
     "prettier": "^3.2.5",
@@ -41,6 +40,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
+    "@changesets/cli": "^2.27.1",
     "@rollup/pluginutils": "^5.1.0",
     "caveman": "^0.1.6"
   },
