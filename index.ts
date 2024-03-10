@@ -1,8 +1,8 @@
 import Caveman from 'caveman';
-import { readFile } from 'fs/promises';
+import { access, readFile } from 'fs/promises';
 import type { Plugin } from 'rollup';
 import { FilterPattern, createFilter } from '@rollup/pluginutils';
-import { extname } from 'path';
+import { dirname, extname, join } from 'path';
 
 function containsDirectives(content: string) {
   return content.includes(Caveman.options.openTag);
@@ -34,6 +34,25 @@ function emitString(content: string) {
   `;
 }
 
+function toCamelCase(name: string) {
+  if (!name) return '';
+
+  // E.g.: icon-bar-chart => IconBarChart
+  return (
+    name[0]?.toUpperCase() +
+    name.slice(1).replace(/-(\w)/g, (_, c) => c.toUpperCase())
+  );
+}
+
+async function getValidPath(path: string) {
+  await access(path);
+  return path;
+}
+
+function getPartialPath(fileName: string, paths: string[]) {
+  return Promise.any(paths.map((path) => getValidPath(join(path, fileName))));
+}
+
 type RollupCavemanOptions = {
   /**
    * A picomatch pattern, or array of patterns, of files that should be
@@ -44,14 +63,21 @@ type RollupCavemanOptions = {
    * Files that should be excluded, if `include` is otherwise too permissive.
    */
   exclude?: FilterPattern;
+  /**
+   * A list of paths to search for partials in case they're not located in the same directory as the template.
+   */
+  partialPaths?: string[];
 };
 
 export default function caveman({
   include = '**/*.html?caveman',
   exclude,
+  partialPaths = [],
 }: RollupCavemanOptions = {}): Plugin {
   const filter = createFilter(include, exclude);
   const postfixRE = /[?#].*$/s;
+  const partialNameMap = new Map();
+  const partialPathCache = new Map();
 
   return {
     name: 'caveman',
@@ -79,6 +105,7 @@ export default function caveman({
       const code = await readFile(filePath, 'utf8');
 
       const hasDirectives = containsDirectives(code);
+
       if (!hasDirectives) {
         return {
           code: emitString(code),
@@ -86,9 +113,59 @@ export default function caveman({
         };
       }
 
-      const compiled = emitCaveman(code);
+      let compiled = emitCaveman(code);
+      const hasPartials = /\b_Cr\('/.test(compiled);
+
+      if (!hasPartials) {
+        return {
+          code: compiled,
+          map: { mappings: '' },
+        };
+      }
+
+      compiled = compiled.replace(
+        /\b_Cr\('([^']+)',/g,
+        (match, partialName) => {
+          if (!partialName) return match;
+
+          const importName = `${toCamelCase(partialName)}Template`;
+          partialNameMap.set(partialName, importName);
+
+          return `${importName}.render(`;
+        },
+      );
+
+      const extension = extname(filePath);
+      const postfix = id.match(postfixRE)?.[0] ?? '';
+      const partialLookupPaths = [
+        dirname(filePath), // Always look for partials in the same directory as the template
+        ...partialPaths,
+      ];
+      let partialImports: string[] = [];
+      try {
+        partialImports = await Promise.all(
+          Array.from(partialNameMap, async ([partialName, importName]) => {
+            const partialPath =
+              partialPathCache.get(partialName) ??
+              (await getPartialPath(
+                partialName + extension,
+                partialLookupPaths,
+              ));
+
+            partialPathCache.set(partialName, partialPath);
+
+            return `import ${importName} from "${partialPath}${postfix}"`;
+          }),
+        );
+      } catch (e) {
+        this.error({ message: 'Unable to find caveman partial', cause: e });
+      }
+
+      const importBlock = partialImports.join('\n\n');
+      let output = importBlock + '\n\n' + compiled;
+
       return {
-        code: compiled,
+        code: output,
         map: { mappings: '' },
       };
     },

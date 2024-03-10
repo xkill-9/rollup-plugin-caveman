@@ -14,6 +14,8 @@ Using yarn:
 yarn add --dev rollup-plugin-caveman
 ```
 
+Note that `caveman` is a peer dependency of this plugin that needs to be installed separately.
+
 ## Usage
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
@@ -47,6 +49,8 @@ Where `template.html` is:
 <div>{{ d.message }}</div>
 ```
 
+The plugin also supports [partials](https://github.com/andrewchilds/caveman?tab=readme-ov-file#--render-partialname-) and by default it will look for them in the same file as the template that imports them or the paths defined in [`partialPaths`](#partialPaths).
+
 ## Options
 
 ### `exclude`
@@ -62,3 +66,14 @@ Type: `String` | `Array[...String]`<br>
 Default: `'**/*.html?caveman'`
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
+
+### `partialPaths`
+
+Type: `Array[...String]`<br>
+Default: `[]`
+
+A list of paths to search for partials in case they're not located in the same directory as the template.
+
+## License
+
+MIT
