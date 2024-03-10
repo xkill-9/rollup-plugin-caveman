@@ -9,6 +9,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
