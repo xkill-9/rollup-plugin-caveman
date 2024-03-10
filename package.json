@@ -6,6 +6,7 @@
   "repository": {
     "url": "https://github.com/xkill-9/rollup-plugin-caveman"
   },
+  "license": "MIT",
   "packageManager": "yarn@4.1.1",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -32,6 +33,7 @@
     "test": "ava"
   },
   "devDependencies": {
+    "@types/lodash.camelcase": "^4",
     "@types/node": "^20.11.25",
     "ava": "^6.1.2",
     "prettier": "^3.2.5",
@@ -42,7 +44,8 @@
   "dependencies": {
     "@changesets/cli": "^2.27.1",
     "@rollup/pluginutils": "^5.1.0",
-    "caveman": "^0.1.6"
+    "caveman": "^0.1.6",
+    "lodash.camelcase": "^4.3.0"
   },
   "ava": {
     "files": [

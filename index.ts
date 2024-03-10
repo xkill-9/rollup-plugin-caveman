@@ -1,54 +1,33 @@
 import Caveman from 'caveman';
+import camelCase from 'lodash.camelcase';
 import { access, readFile } from 'fs/promises';
 import type { Plugin } from 'rollup';
 import { FilterPattern, createFilter } from '@rollup/pluginutils';
 import { dirname, extname, join } from 'path';
 
-function containsDirectives(content: string) {
-  return content.includes(Caveman.options.openTag);
-}
-
-function emitCaveman(content: string) {
-  const compiled = Caveman.compile(content);
+function toES6Module(content: string) {
   return `
     import Caveman from "caveman" 
 
     export function render(d = {}) {
-        ${compiled}
+        ${Caveman.compile(content)}
     }
 
     export default { render };
   `;
 }
 
-function emitString(content: string) {
-  // Deliberately don't escape further; we're emulating Caveman escapeText function.
-  const compiled = content.replace(/'/g, "\\'").replace(/\n/g, '');
-
-  return `
-    export function render() {
-        return '${compiled}';
-    }
-
-    export default { render };
-  `;
-}
-
-function toCamelCase(name: string) {
-  if (!name) return '';
-
-  // E.g.: icon-bar-chart => IconBarChart
-  return (
-    name[0]?.toUpperCase() +
-    name.slice(1).replace(/-(\w)/g, (_, c) => c.toUpperCase())
-  );
-}
-
+/**
+ * Resolves a path if it exists.
+ */
 async function getValidPath(path: string) {
   await access(path);
   return path;
 }
 
+/**
+ * Return the first path that resolves for the given file.
+ */
 function getPartialPath(fileName: string, paths: string[]) {
   return Promise.any(paths.map((path) => getValidPath(join(path, fileName))));
 }
@@ -99,21 +78,15 @@ export default function caveman({
     },
 
     async load(id) {
-      if (!filter(id)) return;
-
+      // Remove postfix if present and read file
       const filePath = id.replace(postfixRE, '');
+      const extension = extname(filePath);
+
+      if (extension !== '.html' || !filter(id)) return;
+
       const code = await readFile(filePath, 'utf8');
 
-      const hasDirectives = containsDirectives(code);
-
-      if (!hasDirectives) {
-        return {
-          code: emitString(code),
-          map: { mappings: '' },
-        };
-      }
-
-      let compiled = emitCaveman(code);
+      let compiled = toES6Module(code);
       const hasPartials = /\b_Cr\('/.test(compiled);
 
       if (!hasPartials) {
@@ -123,19 +96,22 @@ export default function caveman({
         };
       }
 
+      // Captures partial names from Caveman's render macro calls and replaces it with a call to the partial module's render function.
+      // eg: _Cr('my-partial', d) => myPartial.render( d)
+      // Caveman's render macro: https://github.com/andrewchilds/caveman/blob/master/caveman.js#L299C18-L299C20
       compiled = compiled.replace(
         /\b_Cr\('([^']+)',/g,
         (match, partialName) => {
           if (!partialName) return match;
 
-          const importName = `${toCamelCase(partialName)}Template`;
+          const importName = camelCase(partialName);
           partialNameMap.set(partialName, importName);
 
           return `${importName}.render(`;
         },
       );
 
-      const extension = extname(filePath);
+      // Grab postfix if present. default is ?caveman
       const postfix = id.match(postfixRE)?.[0] ?? '';
       const partialLookupPaths = [
         dirname(filePath), // Always look for partials in the same directory as the template
@@ -145,15 +121,17 @@ export default function caveman({
       try {
         partialImports = await Promise.all(
           Array.from(partialNameMap, async ([partialName, importName]) => {
-            const partialPath =
-              partialPathCache.get(partialName) ??
-              (await getPartialPath(
+            let partialPath = partialPathCache.get(partialName);
+
+            if (!partialPath) {
+              partialPath = await getPartialPath(
                 partialName + extension,
                 partialLookupPaths,
-              ));
+              );
+              partialPathCache.set(partialName, partialPath);
+            }
 
-            partialPathCache.set(partialName, partialPath);
-
+            // We need to add the postfix back so partials are also processed by the plugin.
             return `import ${importName} from "${partialPath}${postfix}"`;
           }),
         );

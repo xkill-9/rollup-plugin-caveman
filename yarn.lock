@@ -726,6 +726,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.camelcase@npm:^4":
+  version: 4.3.9
+  resolution: "@types/lodash.camelcase@npm:4.3.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/d6c42c800624b75b079ff7862d258d7c8236837f8485a4fe9f92e5e7d3e9ccaef2eb202e24e8f04d209ad5573c85edc7871d0cecc831454a501d594b11f1311b
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.14.202
+  resolution: "@types/lodash@npm:4.14.202"
+  checksum: 10c0/6064d43c8f454170841bd67c8266cc9069d9e570a72ca63f06bceb484cb4a3ee60c9c1f305c1b9e3a87826049fd41124b8ef265c4dd08b00f6766609c7fe9973
+  languageName: node
+  linkType: hard
+
 "@types/minimist@npm:^1.2.0":
   version: 1.2.5
   resolution: "@types/minimist@npm:1.2.5"
@@ -3040,6 +3056,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.camelcase@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "lodash.camelcase@npm:4.3.0"
+  checksum: 10c0/fcba15d21a458076dd309fce6b1b4bf611d84a0ec252cb92447c948c533ac250b95d2e00955801ebc367e5af5ed288b996d75d37d2035260a937008e14eaf432
+  languageName: node
+  linkType: hard
+
 "lodash.sortby@npm:^4.7.0":
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
@@ -4042,9 +4065,11 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^2.27.1"
     "@rollup/pluginutils": "npm:^5.1.0"
+    "@types/lodash.camelcase": "npm:^4"
     "@types/node": "npm:^20.11.25"
     ava: "npm:^6.1.2"
     caveman: "npm:^0.1.6"
+    lodash.camelcase: "npm:^4.3.0"
     prettier: "npm:^3.2.5"
     rollup: "npm:^4.12.1"
     tsup: "npm:^8.0.2"
