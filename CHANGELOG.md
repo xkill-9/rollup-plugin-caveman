@@ -1,5 +1,11 @@
 # rollup-plugin-caveman
 
+## 0.0.3
+
+### Patch Changes
+
+- Improved README example and updated tests
+
 ## 0.0.2
 
 ### Patch Changes

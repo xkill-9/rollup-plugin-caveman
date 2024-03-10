@@ -1,3 +1,3 @@
 import Template from './template.html?caveman';
 
-document.body.appendChild(Template.render({ message: 'Hello World!' }));
+document.body.innerHTML = Template.render({ message: 'Hello World!' });

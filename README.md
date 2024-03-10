@@ -37,19 +37,43 @@ Then Caveman templates can be imported as ES6 modules.
 
 Example:
 
-```js
-import MyTemplate from './template.html?caveman';
-
-document.body.appendChild(MyTemplate.render({ message: 'Hello World!' }));
-```
-
-Where `template.html` is:
+Assuming we have a `userList.html` template with following contents:
 
 ```html
-<div>{{ d.message }}</div>
+<ul>
+  {{- for d.users as user }}
+  <li class="user">{{user.name}}</li>
+  {{- end }}
+</ul>
 ```
 
-The plugin also supports [partials](https://github.com/andrewchilds/caveman?tab=readme-ov-file#--render-partialname-) and by default it will look for them in the same file as the template that imports them or the paths defined in [`partialPaths`](#partialPaths).
+With an accompanying file `src/index.js`, we could import the template and use it like seen below:
+
+```js
+import UserList from './userList.html?caveman';
+
+document.body.innerHTML = UserList.render({
+  users: [
+    { name: 'Ringo' },
+    { name: 'Paul' },
+    { name: 'George' },
+    { name: 'John' },
+  ],
+});
+```
+
+The resulting ES6 module exposes a single `render` function that takes any arguments defined in the template and returns a string, if we loaded this on a browser, `body.innerHTML` would be replaced with:
+
+```html
+<ul>
+  <li class="user">Ringo</li>
+  <li class="user">Paul</li>
+  <li class="user">George</li>
+  <li class="user">John</li>
+</ul>
+```
+
+The plugin also supports [partials](https://github.com/andrewchilds/caveman?tab=readme-ov-file#--render-partialname-) and by default it'll look for partials in the same directory as the template where they're being imported, you can also define especific paths to look for partial templates using the [`partialPaths`](#partialPaths) option.
 
 ## Options
 
