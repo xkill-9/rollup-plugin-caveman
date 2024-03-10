@@ -37,7 +37,7 @@ Then Caveman templates can be imported as ES6 modules.
 
 Example:
 
-Assuming we have a `userList.html` template with following contents:
+Assuming we have a `userList.html` template with the following contents:
 
 ```html
 <ul>
