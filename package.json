@@ -28,12 +28,25 @@
   "scripts": {
     "build": "tsup index.ts --format esm, cjs --dts",
     "release": "yarn build && changeset publish",
-    "lint": "tsc"
+    "lint": "tsc",
+    "test": "ava"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.11.25",
+    "ava": "^6.1.2",
     "prettier": "^3.2.5",
+    "rollup": "^4.12.1",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^5.1.0",
+    "caveman": "^0.1.6"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**"
+    ]
   }
 }
