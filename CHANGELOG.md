@@ -1,5 +1,11 @@
 # rollup-plugin-caveman
 
+## 0.0.4
+
+### Patch Changes
+
+- Simplified compilation logic
+
 ## 0.0.3
 
 ### Patch Changes

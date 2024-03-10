@@ -62,7 +62,7 @@ document.body.innerHTML = UserList.render({
 });
 ```
 
-The resulting ES6 module exposes a single `render` function that takes any arguments defined in the template and returns a string, if we loaded this on a browser, `body.innerHTML` would be replaced with:
+The resulting ES6 module exposes a single `render` function that takes any arguments defined in the template and returns a string, if we loaded `src/index.js` in a browser, `body.innerHTML` would be replaced with:
 
 ```html
 <ul>
