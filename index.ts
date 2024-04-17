@@ -1,16 +1,20 @@
-import Caveman from 'caveman';
 import camelCase from 'lodash.camelcase';
 import { access, readFile } from 'fs/promises';
 import type { Plugin } from 'rollup';
 import { FilterPattern, createFilter } from '@rollup/pluginutils';
 import { dirname, extname, join } from 'path';
 
+// Lazy load caveman
+function loadCaveman() {
+  return require('caveman');
+}
+
 function toES6Module(content: string) {
   return `
     import Caveman from "caveman" 
 
     export function render(d = {}) {
-        ${Caveman.compile(content)}
+        ${content}
     }
 
     export default { render };
@@ -65,7 +69,7 @@ export default function caveman({
       const extension = extname(id);
       if (!extension.includes('.html')) return null;
 
-      // Grab postfix if present. eg: ?caveman.
+      // Grab postfix if present. Default is ?caveman.
       const postfix = id.match(postfixRE)?.[0] ?? '';
       // Remove postfix if present and resolve file.
       const filePath = id.replace(postfixRE, '');
@@ -73,12 +77,12 @@ export default function caveman({
 
       if (!result) return result;
 
-      // Add the postfix back so that is picked up by our load function.
+      // We need to add the postfix back so that the file is picked up by the load function.
       return result.id + postfix;
     },
 
     async load(id) {
-      // Remove postfix if present and read file
+      // Remove postfix if present.
       const filePath = id.replace(postfixRE, '');
       const extension = extname(filePath);
 
@@ -86,7 +90,8 @@ export default function caveman({
 
       const code = await readFile(filePath, 'utf8');
 
-      let compiled = toES6Module(code);
+      const cavemanLib = await loadCaveman();
+      let compiled = toES6Module(cavemanLib.compile(code));
       const hasPartials = /\b_Cr\('/.test(compiled);
 
       if (!hasPartials) {
@@ -111,7 +116,7 @@ export default function caveman({
         },
       );
 
-      // Grab postfix if present. default is ?caveman
+      // Grab postfix if present. Default is ?caveman
       const postfix = id.match(postfixRE)?.[0] ?? '';
       const partialLookupPaths = [
         dirname(filePath), // Always look for partials in the same directory as the template
