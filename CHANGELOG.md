@@ -1,5 +1,11 @@
 # rollup-plugin-caveman
 
+## 0.0.6
+
+### Patch Changes
+
+- Revert Lazy load changes
+
 ## 0.0.5
 
 ### Patch Changes

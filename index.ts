@@ -1,13 +1,9 @@
 import camelCase from 'lodash.camelcase';
+import cavemanLib from 'caveman';
 import { access, readFile } from 'fs/promises';
 import type { Plugin } from 'rollup';
 import { FilterPattern, createFilter } from '@rollup/pluginutils';
 import { dirname, extname, join } from 'path';
-
-// Lazy load caveman
-function loadCaveman() {
-  return require('caveman');
-}
 
 function toES6Module(content: string) {
   return `
@@ -90,7 +86,6 @@ export default function caveman({
 
       const code = await readFile(filePath, 'utf8');
 
-      const cavemanLib = await loadCaveman();
       let compiled = toES6Module(cavemanLib.compile(code));
       const hasPartials = /\b_Cr\('/.test(compiled);
 
