@@ -1,5 +1,11 @@
 # rollup-plugin-caveman
 
+## 0.0.5
+
+### Patch Changes
+
+- Lazy load caveman for improved performance
+
 ## 0.0.4
 
 ### Patch Changes

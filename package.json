@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-caveman",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Converts Caveman templates to ES6 modules",
   "author": "Jorge Morales",
   "repository": {

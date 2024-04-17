@@ -73,7 +73,7 @@ The resulting ES6 module exposes a single `render` function that takes any argum
 </ul>
 ```
 
-The plugin also supports [partials](https://github.com/andrewchilds/caveman?tab=readme-ov-file#--render-partialname-) and by default it'll look for partials in the same directory as the template where they're being imported, you can also define especific paths to look for partial templates using the [`partialPaths`](#partialPaths) option.
+The plugin also supports [partials](https://github.com/andrewchilds/caveman?tab=readme-ov-file#--render-partialname-), by default it'll look for partials in the parent template's folder or you can also define specific paths to look for partial templates using the [`partialPaths`](#partialPaths) option.
 
 ## Options
 
